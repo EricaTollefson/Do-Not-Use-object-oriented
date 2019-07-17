@@ -63,7 +63,7 @@ class Author implements \JsonSerializable {
 	 * @throws \Exception if some other exception occurs
 	 * @Documentation https://php.net/manual/en/language.oop5.decon.php
 	 **/
-	public function __construct($newAuthorId, string $newAuthorAvatarUrl = null, string $newAuthorActivationToken = null, string $newAuthorEmail, string $newAuthorHash, string $newAuthorUsername) {
+	public function __construct($newAuthorId, string $newAuthorAvatarUrl = null, ?string $newAuthorActivationToken = null, ?string $newAuthorEmail, ?string $newAuthorHash, ?string $newAuthorUsername) {
 		try {
 			$this->setAuthorId($newAuthorId);
 			$this->setAuthorAvatarUrl($newAuthorAvatarUrl);
@@ -103,7 +103,7 @@ class Author implements \JsonSerializable {
 			throw(new $exceptionType($exception->getMessage(), 0, $exception));
 		}
 
-		// convert and store the tweet id
+		// convert and store the author id
 		$this->authorId = $uuid;
 	}
 
@@ -112,7 +112,7 @@ class Author implements \JsonSerializable {
 	 *
 	 * @return string value of author avatar url
 	 **/
-	public function getAuthorAvatarUrl() : string authorAvatarUrl{
+	public function getAuthorAvatarUrl() : string {
 		return($this->authorAvatarUrl);
 	}
 
@@ -120,23 +120,26 @@ class Author implements \JsonSerializable {
 	 * mutator method for author avatar url
 	 *
 	 * @param string $newAuthorAvatarUrl new value of author avatar url
-	 * @throws \RangeException if $newProfileId is not positive
-	 * @throws \TypeError if $newTweetProfileId is not an integer
+	 * @throws \RangeException if the author avatar url is greater than 255 characters
+	 * @throws \InvalidArgumentException  if the author avatar url is not a string or insecure
 	 **/
-public function setAuthorAvatarUrl(string $newAuthorAvatarUrl) : void {
+public function setAuthorAvatarUrl(?string $newAuthorAvatarUrl) : void {
+	if($newAuthorAvatarUrl === null) {
+		$this->authorAvatarUrl = null;
+		return;
+	}
+	//make sure author avatar url is less than 255 characters
+	$newAuthorAvatarUrl = strtolower(trim($newAuthorAvatarUrl));
+	if(ctype_xdigit($newAuthorAvatarUrl) === false) {
+		throw(new\RangeException("url is not valid"));
+	}
 
+	// verify the author avatar url is secure
 	$newAuthorAvatarUrl = trim($newAuthorAvatarUrl);
-	$newAuthorAvatarUrl = filter_var($AuthorAvatarUrl, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
+	$newAuthorAvatarUrl = filter_var($newAuthorAvatarUrl, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
 	if(empty($newAuthorAvatarUrl) === true) {
-		throw(new \InvalidArgumentException("author avatar url is empty"));
+		throw(new \InvalidArgumentException("author avatar url is empty or insecure"));
 	}
-
-	// verify length of author avatar url
-	if(strlen($newAuthorAvatarUrl) > 255) {
-		throw(new \RangeException("url too long"));
-	}
-
-	// store the author avatar url
 	$this->authorAvatarUrl = $newAuthorAvatarUrl;
 }
 
