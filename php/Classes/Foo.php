@@ -177,38 +177,71 @@ public function setAuthorAvatarUrl(?string $newAuthorAvatarUrl) : void {
 	}
 
 	/**
-	 * accessor method for tweet date
+	 * accessor method for author email
 	 *
-	 * @return \DateTime value of tweet date
+	 * @return string value of email
 	 **/
-	public function getTweetDate() : \DateTime {
-		return($this->tweetDate);
+	public function getAuthorEmail() : string {
+		return($this->authorEmail);
 	}
 
 	/**
-	 * mutator method for tweet date
+	 * mutator method for author email
 	 *
-	 * @param \DateTime|string|null $newTweetDate tweet date as a DateTime object or string (or null to load the current time)
-	 * @throws \InvalidArgumentException if $newTweetDate is not a valid object or string
-	 * @throws \RangeException if $newTweetDate is a date that does not exist
+	 * @param string $newAuthorEmail string author email
+	 * @throws \InvalidArgumentException if $newAuthorEmail is not a valid email or insecure
+	 * @throws \RangeException if $newAuthorEmail is > 128 characters
+	 * @throws \TypeError if $newAuthorEmail is not a string
 	 **/
-	public function setTweetDate($newTweetDate = null) : void {
-		// base case: if the date is null, use the current date and time
-		if($newTweetDate === null) {
-			$this->tweetDate = new \DateTime();
-			return;
+	public function setAuthorEmail(?string $newAuthorEmail): void {
+		// verify the email is secure
+		$newAuthorEmail = trim($newAuthorEmail);
+		$newAuthorEmail = filter_var($newAuthorEmail, FILTER_VALIDATE_EMAIL);
+		if(empty($newAuthorEmail) === true) {
+			throw(new \InvalidArgumentException("email is empty or insecure"));
 		}
-
-		// store the like date using the ValidateDate trait
-		try {
-			$newTweetDate = self::validateDateTime($newTweetDate);
-		} catch(\InvalidArgumentException | \RangeException $exception) {
-			$exceptionType = get_class($exception);
-			throw(new $exceptionType($exception->getMessage(), 0, $exception));
+		// verify the email will fit in the database
+		if(strlen($newAuthorEmail) > 128) {
+			throw(new \RangeException("email is too large"));
 		}
-		$this->tweetDate = $newTweetDate;
+		// store the email
+		$this->authorEmail = $newAuthorEmail;
+	}
+	/**
+	 * accessor method for authorHash
+	 *
+	 * @return string value of hash
+	 */
+	public function getAuthorHash(): string {
+		return $this->authorHash;
 	}
 
+	/**
+	 * mutator method for profile hash password
+	 *
+	 * @param string $newAuthorHash
+	 * @throws \InvalidArgumentException if the hash is not secure
+	 * @throws \RangeException if the hash is not 97 characters
+	 * @throws \TypeError if profile hash is not a string
+	 */
+	public function setAuthorHash(?string $newAuthorHash): void {
+		//enforce that the hash is properly formatted
+		$newAuthorHash = trim($newAuthorHash);
+		if(empty($newAuthorHash) === true) {
+			throw(new \InvalidArgumentException("profile password hash empty or insecure"));
+		}
+		//enforce the hash is really an Argon hash
+		$authorHashInfo = password_get_info($newAuthorHash);
+		if($authorHashInfo["algoName"] !== "argon2i") {
+			throw(new \InvalidArgumentException("profile hash is not a valid hash"));
+		}
+		//enforce that the hash is exactly 97 characters.
+		if(strlen($newAuthorHash) !== 97) {
+			throw(new \RangeException("profile hash must be 97 characters"));
+		}
+		//store the hash
+		$this->authorHash = $newAuthorHash;
+	}
 	/**
 	 * inserts this Tweet into mySQL
 	 *
