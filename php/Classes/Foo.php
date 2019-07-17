@@ -63,14 +63,14 @@ class Author implements \JsonSerializable {
 	 * @throws \Exception if some other exception occurs
 	 * @Documentation https://php.net/manual/en/language.oop5.decon.php
 	 **/
-	public function __construct($newAuthorId, string $newAuthorAvatarUrl = null, ?string $newAuthorActivationToken = null, ?string $newAuthorEmail, ?string $newAuthorHash, ?string $newAuthorUsername) {
+	public function __construct($newAuthorId, ?string $newAuthorAvatarUrl, ?string $newAuthorActivationToken, ?string $newAuthorEmail, ?string $newAuthorHash, ?string $newAuthorUsername) {
 		try {
 			$this->setAuthorId($newAuthorId);
 			$this->setAuthorAvatarUrl($newAuthorAvatarUrl);
 			$this->setAuthorActivationToken($newAuthorActivationToken);
 			$this->setAuthorEmail($newAuthorEmail);
 			$this->setAuthorHash($newAuthorHash);
-			$this->setAuthorUserName($newAuthorUsername);
+			$this->setAuthorUsername($newAuthorUsername);
 		}
 			//determine what exception type was thrown
 		catch(\InvalidArgumentException | \RangeException | \Exception | \TypeError $exception) {
@@ -242,6 +242,38 @@ public function setAuthorAvatarUrl(?string $newAuthorAvatarUrl) : void {
 		//store the hash
 		$this->authorHash = $newAuthorHash;
 	}
+	/**
+	 * accessor method for author user name
+	 *
+	 * @return string value of author user name
+	 **/
+	public function getAuthorUsername(): string {
+		return ($this->authorUsername);
+	}
+	/**
+	 * mutator method for author user name
+	 *
+	 * @param string $newAuthorUsername new value of author user name
+	 * @throws \InvalidArgumentException if $newAuthorUsername is not a string or insecure
+	 * @throws \RangeException if $newAuthorUsername is > 32 characters
+	 * @throws \TypeError if $newAuthorUsername is not a string
+	 **/
+	public function setAuthorUsername(?string $newAuthorUsername) : void {
+				// verify the user name is secure
+				$newAuthorUsername = trim($newAuthorUsername);
+				$newAuthorUsername = filter_var($newAuthorUsername, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
+				if(empty($newAuthorUsername) === true) {
+					throw(new \InvalidArgumentException("profile user name is empty or insecure"));
+				}
+				// verify the user name will fit in the database
+				if(strlen($newAuthorUsername) > 32) {
+					throw(new \RangeException("profile user name is too large"));
+				}
+				// store the user name
+				$this->authorUsername = $newAuthorUsername;
+			});
+		}
+	
 	/**
 	 * inserts this Tweet into mySQL
 	 *
