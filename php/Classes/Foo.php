@@ -51,22 +51,26 @@ class Author implements \JsonSerializable {
 	/**
 	 * constructor for this Author
 	 *
-	 * @param string|Uuid $newTweetId id of this Tweet or null if a new Tweet
-	 * @param string|Uuid $newTweetProfileId id of the Profile that sent this Tweet
-	 * @param string $newTweetContent string containing actual tweet data
-	 * @param \DateTime|string|null $newTweetDate date and time Tweet was sent or null if set to current date and time
+	 * @param string|Uuid $newAuthorId id of this Author
+	 * @param string|null $newAuthorAvatarUrl url of the author's avatar or null if avatar not created
+	 * @param string|null $newAuthorActivationToken string containing the author activation token
+	 * @param string $newAuthorEmail unique contact email for author
+	 * @param string $newAuthorHash hash for author email
+	 * @param string $newAuthorUsername unique username for author
 	 * @throws \InvalidArgumentException if data types are not valid
 	 * @throws \RangeException if data values are out of bounds (e.g., strings too long, negative integers)
 	 * @throws \TypeError if data types violate type hints
 	 * @throws \Exception if some other exception occurs
 	 * @Documentation https://php.net/manual/en/language.oop5.decon.php
 	 **/
-	public function __construct($newTweetId, $newTweetProfileId, string $newTweetContent, $newTweetDate = null) {
+	public function __construct($newAuthorId, string $newAuthorAvatarUrl = null, string $newAuthorActivationToken = null, string $newAuthorEmail, string $newAuthorHash, string $newAuthorUsername) {
 		try {
-			$this->setTweetId($newTweetId);
-			$this->setTweetProfileId($newTweetProfileId);
-			$this->setTweetContent($newTweetContent);
-			$this->setTweetDate($newTweetDate);
+			$this->setAuthorId($newAuthorId);
+			$this->setAuthorAvatarUrl($newAuthorAvatarUrl);
+			$this->setAuthorActivationToken($newAuthorActivationToken);
+			$this->setAuthorEmail($newAuthorEmail);
+			$this->setAuthorHash($newAuthorHash);
+			$this->setAuthorUserName($newAuthorUsername);
 		}
 			//determine what exception type was thrown
 		catch(\InvalidArgumentException | \RangeException | \Exception | \TypeError $exception) {
