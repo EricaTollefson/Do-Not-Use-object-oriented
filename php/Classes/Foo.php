@@ -123,17 +123,22 @@ class Author implements \JsonSerializable {
 	 * @throws \RangeException if $newProfileId is not positive
 	 * @throws \TypeError if $newTweetProfileId is not an integer
 	 **/
-	public function setAuthorAvatarUrl(string $newAuthorAvatarUrl) : void {
-		try {
-			$newAuthorAvatarUrl = self::validateUuid($newAuthorAvatarUrl);
-		} catch(\InvalidArgumentException | \RangeException | \Exception | \TypeError $exception) {
-			$exceptionType = get_class($exception);
-			throw(new $exceptionType($exception->getMessage(), 0, $exception));
-		}
+public function setAuthorAvatarUrl(string $newAuthorAvatarUrl) : void {
 
-		// store the author avatar url
-		$this->authorAvatarUrl = $newAuthorAvatarUrl;
+	$newAuthorAvatarUrl = trim($newAuthorAvatarUrl);
+	$newAuthorAvatarUrl = filter_var($AuthorAvatarUrl, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
+	if(empty($newAuthorAvatarUrl) === true) {
+		throw(new \InvalidArgumentException("author avatar url is empty"));
 	}
+
+	// verify length of author avatar url
+	if(strlen($newAuthorAvatarUrl) > 255) {
+		throw(new \RangeException("url too long"));
+	}
+
+	// store the author avatar url
+	$this->authorAvatarUrl = $newAuthorAvatarUrl;
+}
 
 	/**
 	 * accessor method for tweet content
