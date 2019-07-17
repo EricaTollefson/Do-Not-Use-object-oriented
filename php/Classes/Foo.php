@@ -80,59 +80,59 @@ class Author implements \JsonSerializable {
 	}
 
 	/**
-	 * accessor method for tweet id
+	 * accessor method for author id
 	 *
-	 * @return Uuid value of tweet id
+	 * @return Uuid value of author id
 	 **/
-	public function getTweetId() : Uuid {
-		return($this->tweetId);
+	public function getAuthorId() : Uuid {
+		return($this->authorId);
 	}
 
 	/**
-	 * mutator method for tweet id
+	 * mutator method for author id
 	 *
-	 * @param Uuid|string $newTweetId new value of tweet id
-	 * @throws \RangeException if $newTweetId is not positive
-	 * @throws \TypeError if $newTweetId is not a uuid or string
+	 * @param Uuid|string $newAuthorId new value of author id
+	 * @throws \RangeException if $newAuthorId is not positive
+	 * @throws \TypeError if $newAuthorId is not a uuid or string
 	 **/
-	public function setTweetId( $newTweetId) : void {
+	public function setAuthorId( $newAuthorId) : void {
 		try {
-			$uuid = self::validateUuid($newTweetId);
+			$uuid = self::validateUuid($newAuthorId);
 		} catch(\InvalidArgumentException | \RangeException | \Exception | \TypeError $exception) {
 			$exceptionType = get_class($exception);
 			throw(new $exceptionType($exception->getMessage(), 0, $exception));
 		}
 
 		// convert and store the tweet id
-		$this->tweetId = $uuid;
+		$this->authorId = $uuid;
 	}
 
 	/**
-	 * accessor method for tweet profile id
+	 * accessor method for author avatar url
 	 *
-	 * @return Uuid value of tweet profile id
+	 * @return string value of author avatar url
 	 **/
-	public function getTweetProfileId() : Uuid{
-		return($this->tweetProfileId);
+	public function getAuthorAvatarUrl() : string authorAvatarUrl{
+		return($this->authorAvatarUrl);
 	}
 
 	/**
-	 * mutator method for tweet profile id
+	 * mutator method for author avatar url
 	 *
-	 * @param string | Uuid $newTweetProfileId new value of tweet profile id
+	 * @param string $newAuthorAvatarUrl new value of author avatar url
 	 * @throws \RangeException if $newProfileId is not positive
 	 * @throws \TypeError if $newTweetProfileId is not an integer
 	 **/
-	public function setTweetProfileId( $newTweetProfileId) : void {
+	public function setAuthorAvatarUrl(string $newAuthorAvatarUrl) : void {
 		try {
-			$uuid = self::validateUuid($newTweetProfileId);
+			$newAuthorAvatarUrl = self::validateUuid($newAuthorAvatarUrl);
 		} catch(\InvalidArgumentException | \RangeException | \Exception | \TypeError $exception) {
 			$exceptionType = get_class($exception);
 			throw(new $exceptionType($exception->getMessage(), 0, $exception));
 		}
 
-		// convert and store the profile id
-		$this->tweetProfileId = $uuid;
+		// store the author avatar url
+		$this->authorAvatarUrl = $newAuthorAvatarUrl;
 	}
 
 	/**
