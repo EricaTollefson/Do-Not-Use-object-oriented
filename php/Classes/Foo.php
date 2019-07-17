@@ -144,37 +144,36 @@ public function setAuthorAvatarUrl(?string $newAuthorAvatarUrl) : void {
 }
 
 	/**
-	 * accessor method for tweet content
+	 * accessor method for author activation token
 	 *
-	 * @return string value of tweet content
+	 * @return string value of author activation token
 	 **/
-	public function getTweetContent() : string {
-		return($this->tweetContent);
+	public function getAuthorActivationToken() : ?string {
+		return($this->authorActivationToken);
 	}
 
 	/**
-	 * mutator method for tweet content
+	 * mutator method for author activation token
 	 *
-	 * @param string $newTweetContent new value of tweet content
-	 * @throws \InvalidArgumentException if $newTweetContent is not a string or insecure
-	 * @throws \RangeException if $newTweetContent is > 140 characters
-	 * @throws \TypeError if $newTweetContent is not a string
+	 * @param string $newAuthorActivationToken new value of author activation token
+	 * @throws \InvalidArgumentException if if the token is not a string or insecure
+	 * @throws \RangeException if the token is not exactly 32 characters
+	 * @throws \TypeError if the token is not a string
 	 **/
-	public function setTweetContent(string $newTweetContent) : void {
-		// verify the tweet content is secure
-		$newTweetContent = trim($newTweetContent);
-		$newTweetContent = filter_var($newTweetContent, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
-		if(empty($newTweetContent) === true) {
-			throw(new \InvalidArgumentException("tweet content is empty or insecure"));
+	public function setAuthorActivationToken(?string $newAuthorActivationToken) : void {
+		if($newAuthorActivationToken === null) {
+			$this->authorActivationToken = null;
+			return;
 		}
-
-		// verify the tweet content will fit in the database
-		if(strlen($newTweetContent) > 140) {
-			throw(new \RangeException("tweet content too large"));
+		$newAuthorActivationToken = strtolower(trim($newAuthorActivationToken));
+		if(ctype_xdigit($newAuthorActivationToken) === false) {
+			throw(new\RangeException("activation token is not valid"));
 		}
-
-		// store the tweet content
-		$this->tweetContent = $newTweetContent;
+		//make sure author activation token is only 32 characters
+		if(strlen($newAuthorActivationToken) !== 32) {
+			throw(new\RangeException("author activation token has to be 32 characters"));
+		}
+		$this->authorActivationToken = $newAuthorActivationToken;
 	}
 
 	/**
